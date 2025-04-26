@@ -1,0 +1,47 @@
+// Example screenshot shows how to take a screenshot of the current desktop
+// and show it in a window. In a comment, it also shows how to save it as
+// a png.
+//
+// It works by getting the image of the root window, which automatically
+// includes all child windows.
+package main
+
+import (
+	"image"
+	"log"
+
+	"github.com/jezek/xgb/xproto"
+
+	"github.com/jezek/xgbutil"
+	"github.com/jezek/xgbutil/xevent"
+	"github.com/jezek/xgbutil/xgraphics"
+)
+
+func main() {
+	X, err := xgbutil.NewConn()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Use the "NewDrawable" constructor to create an xgraphics.Image value
+	// from a drawable. (Usually this is done with pixmaps, but drawables
+	// can also be windows.)
+	fullScreen, err := xgraphics.NewDrawable(X, xproto.Drawable(X.RootWin()))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ximg := xgraphics.New(X, image.Rect(1920, 0, 4480, 1080))
+	xgraphics.Blend(ximg, fullScreen, image.Pt(0, 0))
+
+	// Shows the screenshot in a window.
+	ximg.XShowExtra("Screenshot", true)
+
+	// If you'd like to save it as a png, use:
+	// err = ximg.SavePng("screenshot.png")
+	// if err != nil {
+	// log.Fatal(err)
+	// }
+
+	xevent.Main(X)
+}
