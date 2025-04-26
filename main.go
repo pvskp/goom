@@ -1,5 +1,3 @@
-// Example get-active-window reads the _NET_ACTIVE_WINDOW property of the root
-// window and uses the result (a window id) to get the name of the window.
 package main
 
 import (
@@ -118,12 +116,12 @@ func createNewImage(imgCookie *xproto.GetImageReply, width int, height int) erro
 
 	file, err := os.Create("screenshot.png")
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to create file: %v", err)
 	}
 
 	defer file.Close()
 	if err := png.Encode(file, img); err != nil {
-		log.Fatal("Failed to save image:", err)
+		return fmt.Errorf("failed to save image: %v", err)
 	}
 
 	log.Println("Saved screenshot to screenshot.png")
